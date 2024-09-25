@@ -1,0 +1,20 @@
+[package]
+name = "csv2xml"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+
+[dependencies]
+converter = { path = "converter" }
+clap = { version = "4.5.18", features = ["derive"] }
+regex = "1.7"
+xmltree = "0.11"
+log = "0.4"
+env_logger = "0.11.5"
+chardet = "0.2.4"
+anyhow = "1.0.89"
+
+[dev-dependencies]
+assert_cmd = "2.0"
+
