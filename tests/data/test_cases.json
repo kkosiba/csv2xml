@@ -1,0 +1,8 @@
+[
+  {
+      "description": "Test conversion with empty lines",
+      "input_file": "inputs/empty_lines.tsv",
+      "expected_output_file": "expected_outputs/empty_lines.xml"
+  }
+]
+
