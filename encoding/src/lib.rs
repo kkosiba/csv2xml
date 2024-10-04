@@ -1,7 +1,6 @@
 use std::{fs::File, io::Read};
 
 use chardetng::EncodingDetector;
-use log::debug;
 
 const SUPPORTED_ENCODINGS: [&str; 13] = [
     "windows-1252",
@@ -28,22 +27,25 @@ fn is_supported_encoding(encoding: &str) -> bool {
         .any(|&supported| supported.eq_ignore_ascii_case(encoding))
 }
 
-pub fn check_encoding(file_path: &str) -> Result<(), anyhow::Error> {
+pub fn check_encoding(file_path: &str) -> Result<(), String> {
     // Open the file
     let file = match File::open(file_path) {
         Ok(file) => file,
-        Err(error) => anyhow::bail!("Failed to open file '{:?}'. Error: {}", file_path, error),
+        Err(error) => {
+            return Err(format!(
+                "Failed to open file '{:?}'. Error: {}",
+                file_path, error
+            ))
+        }
     };
     // Read a chunk of the file
     let mut buffer = vec![0u8; MAX_BYTES_TO_READ];
     let mut handle = file.take(MAX_BYTES_TO_READ as u64);
     if let Err(error) = handle.read(&mut buffer) {
-        anyhow::bail!(
+        return Err(format!(
             "Failed to read '{}' bytes from file '{:?}'. Error: {}",
-            MAX_BYTES_TO_READ,
-            file_path,
-            error,
-        )
+            MAX_BYTES_TO_READ, file_path, error
+        ));
     };
 
     // Detect the input file encoding
@@ -51,16 +53,15 @@ pub fn check_encoding(file_path: &str) -> Result<(), anyhow::Error> {
     detector.feed(&buffer, true);
     let detected_encoding = detector.guess(None, true).name();
 
-    debug!("Detected encoding: {}", detected_encoding);
+    println!("Detected encoding: {}", detected_encoding);
 
     // Check if the detected encoding is supported
     if !is_supported_encoding(detected_encoding) {
-        anyhow::bail!(
+        return Err(format!(
             "Unsupported encoding: '{}'. Supported encodings are: {:?}",
-            detected_encoding,
-            SUPPORTED_ENCODINGS
-        );
+            detected_encoding, SUPPORTED_ENCODINGS
+        ));
     }
-    debug!("Encoding '{}' is supported.", detected_encoding);
+    println!("Encoding '{}' is supported.", detected_encoding);
     Ok(())
 }

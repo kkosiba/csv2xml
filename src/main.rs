@@ -1,5 +1,4 @@
 use clap::{Parser, ValueEnum};
-use log::error;
 use std::fmt;
 
 const DEFAULT_ENCODING: &str = "utf-8";
@@ -83,17 +82,14 @@ struct Cli {
 }
 
 fn main() {
-    // Initialize logger with default settings
-    env_logger::init();
-
     let args = Cli::parse();
 
-    if let Err(error) = converter::encoding::check_encoding(&args.input_file) {
-        error!("{}", error);
+    if let Err(error) = encoding::check_encoding(&args.input_file) {
+        eprintln!("{}", error);
         std::process::exit(2);
     }
 
-    match converter::convert::convert(
+    match converter::convert(
         &args.input_file,
         &args.output_file,
         args.delimiter.as_char(),
@@ -105,8 +101,8 @@ fn main() {
         //    args.field_limit,
     ) {
         Ok(_) => std::process::exit(0),
-        Err(e) => {
-            error!("Error: {:?}", e);
+        Err(error) => {
+            eprintln!("{}", error);
             std::process::exit(2);
         }
     }
