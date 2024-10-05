@@ -15,7 +15,7 @@ pub fn convert(input_path: &str, output_path: &str, delimiter: char) -> Result<(
     let mut xml_writer = Writer::new_with_indent(writer, b' ', 4);
 
     // Write the XML declaration
-    let decl = quick_xml::events::BytesDecl::new("1.0", Some("UTF-8"), None);
+    let decl = quick_xml::events::BytesDecl::new("1.0", None, None);
     xml_writer.write_event(Event::Decl(decl))?;
 
     // Start the root <Document> element
